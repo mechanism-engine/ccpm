@@ -1,0 +1,139 @@
+import path from "node:path";
+import { exists, readJson } from "../utils.js";
+
+export interface ValidationResult {
+	valid: boolean;
+	errors: string[];
+	warnings: string[];
+}
+
+interface PackageJson {
+	name?: string;
+	version?: string;
+	main?: string;
+	files?: string[];
+	ccpm?: {
+		extension?: {
+			root?: string;
+			name?: string;
+		};
+	};
+}
+
+export function validatePackage(packageDir: string): ValidationResult {
+	const errors: string[] = [];
+	const warnings: string[] = [];
+
+	const pkgJsonPath = path.join(packageDir, "package.json");
+
+	// 1. Check root package.json exists
+	if (!exists(pkgJsonPath)) {
+		errors.push(`package.json not found in ${packageDir}`);
+		return { valid: false, errors, warnings };
+	}
+
+	// 2. Parse root package.json
+	let pkg: PackageJson;
+	try {
+		pkg = readJson<PackageJson>(pkgJsonPath);
+	} catch {
+		errors.push("package.json is not valid JSON. Check for syntax errors.");
+		return { valid: false, errors, warnings };
+	}
+
+	// 3. Check ccpm.extension exists
+	const ext = pkg?.ccpm?.extension;
+	if (!ext) {
+		errors.push(
+			'Missing "ccpm.extension" in package.json. Add: { "ccpm": { "extension": { "source": "...", "name": "..." } } }',
+		);
+		return { valid: false, errors, warnings };
+	}
+
+	// 4. Check required fields
+	if (!ext.root) {
+		errors.push('Missing "ccpm.extension.root" - path to extension folder (e.g., "extension")');
+	}
+	if (!ext.name) {
+		errors.push(
+			'Missing "ccpm.extension.name" - unique extension identifier used in extensions/ folder',
+		);
+	}
+
+	if (errors.length > 0) {
+		return { valid: false, errors, warnings };
+	}
+
+	// 5. Check root directory exists
+	const sourceDir = path.join(packageDir, ext.root as string);
+	if (!exists(sourceDir)) {
+		errors.push(
+			`Root directory "${ext.root}" not found. Create it or update ccpm.extension.root`,
+		);
+		return { valid: false, errors, warnings };
+	}
+
+	// 6. Check extension manifest exists
+	const manifestPath = path.join(sourceDir, "package.json");
+	if (!exists(manifestPath)) {
+		errors.push(
+			`Extension manifest not found at ${ext.root}/package.json. This file is required by Cocos Creator.`,
+		);
+		return { valid: false, errors, warnings };
+	}
+
+	// 7. Parse and validate extension manifest
+	let manifest: PackageJson;
+	try {
+		manifest = readJson<PackageJson>(manifestPath);
+	} catch {
+		errors.push(`${ext.root}/package.json is not valid JSON. Check for syntax errors.`);
+		return { valid: false, errors, warnings };
+	}
+
+	// 8. Check manifest required fields
+	if (!manifest.name) {
+		errors.push(`${ext.root}/package.json missing "name" field`);
+	}
+	if (!manifest.version) {
+		errors.push(`${ext.root}/package.json missing "version" field`);
+	}
+
+	// 9. Check files array includes root (warning only)
+	if (pkg.files && !pkg.files.some((f) => f.includes(ext.root as string))) {
+		warnings.push(
+			`"files" array in package.json may not include "${ext.root}". Extension won't be published to npm.`,
+		);
+	}
+
+	return {
+		valid: errors.length === 0,
+		errors,
+		warnings,
+	};
+}
+
+export function cmdValidate(packageDir: string): void {
+	const result = validatePackage(packageDir);
+
+	if (result.valid) {
+		console.log("Package structure is valid.");
+		if (result.warnings.length > 0) {
+			console.log("\nWarnings:");
+			for (const warning of result.warnings) {
+				console.log(`  - ${warning}`);
+			}
+		}
+	} else {
+		console.error("Package validation failed:\n");
+		for (const error of result.errors) {
+			console.error(`  - ${error}`);
+		}
+		if (result.warnings.length > 0) {
+			console.log("\nWarnings:");
+			for (const warning of result.warnings) {
+				console.log(`  - ${warning}`);
+			}
+		}
+	}
+}
