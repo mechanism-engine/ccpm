@@ -54,7 +54,7 @@ export function createFixtureProject(): FixtureProject {
 	updateProjectPackageJson();
 
 	const addExtensionPackage = (opts: ExtensionPackageOptions): string => {
-		const extRoot = opts.root || "cocos-extension";
+		const extRoot = opts.root || "ccpm-extension";
 		const pkgDir = path.join(nodeModulesDir, opts.name);
 
 		fs.mkdirSync(pkgDir, { recursive: true });

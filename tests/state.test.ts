@@ -34,7 +34,7 @@ describe("state", () => {
 				version: 1,
 				deployedAt: "2024-01-01T00:00:00.000Z",
 				extensions: {
-					"my-ext": { npmPackage: "my-package", root: "cocos-extension" },
+					"my-ext": { npmPackage: "my-package", root: "ccpm-extension" },
 				},
 			};
 			fs.writeFileSync(getStatePath(fixture.extensionsDir), JSON.stringify(state));
@@ -59,13 +59,13 @@ describe("state", () => {
 				{
 					npmPackage: "@mechanism-engine/ext-1",
 					npmPackageDir: "/path/to/ext-1",
-					sourceDir: "/path/to/ext-1/cocos-extension",
+					sourceDir: "/path/to/ext-1/ccpm-extension",
 					extName: "ext-1",
 				},
 				{
 					npmPackage: "ext-2",
 					npmPackageDir: "/path/to/ext-2",
-					sourceDir: "/path/to/ext-2/cocos-extension",
+					sourceDir: "/path/to/ext-2/ccpm-extension",
 					extName: "ext-2",
 				},
 			];
@@ -76,8 +76,8 @@ describe("state", () => {
 			expect(state).not.toBeNull();
 			expect(state?.version).toBe(1);
 			expect(state?.extensions).toEqual({
-				"ext-1": { npmPackage: "@mechanism-engine/ext-1", root: "cocos-extension" },
-				"ext-2": { npmPackage: "ext-2", root: "cocos-extension" },
+				"ext-1": { npmPackage: "@mechanism-engine/ext-1", root: "ccpm-extension" },
+				"ext-2": { npmPackage: "ext-2", root: "ccpm-extension" },
 			});
 		});
 
@@ -103,7 +103,7 @@ describe("state", () => {
 				{
 					npmPackage: "pkg-1",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-1",
 				},
 			];
@@ -120,19 +120,19 @@ describe("state", () => {
 				{
 					npmPackage: "pkg-1",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-1",
 				},
 				{
 					npmPackage: "pkg-2",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-2",
 				},
 				{
 					npmPackage: "pkg-3",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-3",
 				},
 			];
@@ -143,13 +143,13 @@ describe("state", () => {
 				{
 					npmPackage: "pkg-1",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-1",
 				},
 				{
 					npmPackage: "pkg-3",
 					npmPackageDir: "/path",
-					sourceDir: "/path/cocos-extension",
+					sourceDir: "/path/ccpm-extension",
 					extName: "ext-3",
 				},
 			];

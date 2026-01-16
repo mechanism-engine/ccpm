@@ -59,10 +59,10 @@ Each extension package needs to advertise where its Cocos Creator files live:
 {
   "name": "@your-scope/my-extension",
   "version": "0.1.0",
-  "files": ["cocos-extension/**"],
+  "files": ["ccpm-extension/**"],
   "ccpm": {
     "extension": {
-      "root": "cocos-extension",
+      "root": "ccpm-extension",
       "name": "my-extension"
     }
   }

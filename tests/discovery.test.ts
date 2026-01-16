@@ -100,7 +100,7 @@ describe("discoverExtensions", () => {
 		expect(result).toHaveLength(1);
 		expect(result[0].npmPackageDir).toContain("node_modules/@mechanism-engine/test-ext");
 		expect(result[0].sourceDir).toContain(
-			"node_modules/@mechanism-engine/test-ext/cocos-extension",
+			"node_modules/@mechanism-engine/test-ext/ccpm-extension",
 		);
 	});
 
