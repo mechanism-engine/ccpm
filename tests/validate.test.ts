@@ -272,7 +272,9 @@ describe("cmdValidate", () => {
 
 		cmdValidate(tmpDir);
 
-		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Package structure is valid"));
+		expect(consoleSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Package structure is valid. Extension: test-ext"),
+		);
 	});
 
 	it("prints error messages for invalid package", () => {

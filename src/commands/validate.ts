@@ -2,11 +2,21 @@ import path from "node:path";
 import { log } from "../logger.js";
 import { exists, readJson } from "../utils.js";
 
-export interface ValidationResult {
-	valid: boolean;
+export interface ValidationResultSuccess {
+	valid: true;
+	errors: [];
+	warnings: string[];
+	extName: string;
+}
+
+export interface ValidationResultError {
+	valid: false;
 	errors: string[];
 	warnings: string[];
+	extName?: string;
 }
+
+export type ValidationResult = ValidationResultSuccess | ValidationResultError;
 
 interface PackageJson {
 	name?: string;
@@ -105,10 +115,15 @@ export function validatePackage(packageDir: string): ValidationResult {
 		);
 	}
 
+	if (errors.length > 0) {
+		return { valid: false, errors, warnings, extName: ext.name };
+	}
+
 	return {
-		valid: errors.length === 0,
-		errors,
+		valid: true,
+		errors: [],
 		warnings,
+		extName: ext.name as string,
 	};
 }
 
@@ -116,7 +131,7 @@ export function cmdValidate(packageDir: string): void {
 	const result = validatePackage(packageDir);
 
 	if (result.valid) {
-		log.success("Package structure is valid.");
+		log.success(`Package structure is valid. Extension: ${result.extName}`);
 		if (result.warnings.length > 0) {
 			log.warn("Warnings:");
 			for (const warning of result.warnings) {
