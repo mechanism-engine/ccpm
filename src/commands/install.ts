@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { discoverExtensions } from "../discovery.js";
+import { log } from "../logger.js";
 import { ensureExtensionsDir, validateProject } from "../project.js";
 import { getStaleExtensions, writeState } from "../state.js";
 import { copyDir, exists, isSymlink, rmForce } from "../utils.js";
@@ -14,7 +15,7 @@ export async function cmdInstall(projectRoot: string, clean: boolean): Promise<v
 	const extensionsDir = ensureExtensionsDir(realProjectRoot);
 
 	if (extensions.length === 0) {
-		console.log("No extensions found in node_modules.");
+		log.info("No extensions found in node_modules.");
 		return;
 	}
 
@@ -25,7 +26,7 @@ export async function cmdInstall(projectRoot: string, clean: boolean): Promise<v
 			const stalePath = path.join(extensionsDir, name);
 			if (exists(stalePath) || isSymlink(stalePath)) {
 				rmForce(stalePath);
-				console.log(`  removed stale: ${name}`);
+				log.info(`Removed stale: ${name}`);
 			}
 		}
 	}
@@ -38,11 +39,8 @@ export async function cmdInstall(projectRoot: string, clean: boolean): Promise<v
 
 		// Check for duplicate extension names from different packages
 		if (deployed.has(ext.extName)) {
-			console.error(
-				`\nError: Multiple packages try to deploy extension "${ext.extName}":
-  - ${deployed.get(ext.extName)}
-  - ${ext.npmPackage}
-This can happen with pnpm hidden directories. Ensure only one package provides this extension.`,
+			log.error(
+				`Multiple packages try to deploy extension "${ext.extName}":\n  - ${deployed.get(ext.extName)}\n  - ${ext.npmPackage}\nThis can happen with pnpm hidden directories. Ensure only one package provides this extension.`,
 			);
 			process.exit(1);
 		}
@@ -55,11 +53,11 @@ This can happen with pnpm hidden directories. Ensure only one package provides t
 
 		deployed.set(ext.extName, ext.npmPackage);
 		count++;
-		console.log(`  ${ext.extName} <- ${ext.sourceDir}`);
+		log.info(`${ext.extName} <- ${ext.sourceDir}`);
 	}
 
 	// Write state
 	writeState(extensionsDir, extensions);
 
-	console.log(`\nccpm install: deployed ${count} extension(s)`);
+	log.success(`Deployed ${count} extension(s)`);
 }

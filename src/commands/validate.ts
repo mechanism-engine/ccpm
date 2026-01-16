@@ -1,4 +1,5 @@
 import path from "node:path";
+import { log } from "../logger.js";
 import { exists, readJson } from "../utils.js";
 
 export interface ValidationResult {
@@ -67,9 +68,7 @@ export function validatePackage(packageDir: string): ValidationResult {
 	// 5. Check root directory exists
 	const sourceDir = path.join(packageDir, ext.root as string);
 	if (!exists(sourceDir)) {
-		errors.push(
-			`Root directory "${ext.root}" not found. Create it or update ccpm.extension.root`,
-		);
+		errors.push(`Root directory "${ext.root}" not found. Create it or update ccpm.extension.root`);
 		return { valid: false, errors, warnings };
 	}
 
@@ -117,22 +116,22 @@ export function cmdValidate(packageDir: string): void {
 	const result = validatePackage(packageDir);
 
 	if (result.valid) {
-		console.log("Package structure is valid.");
+		log.success("Package structure is valid.");
 		if (result.warnings.length > 0) {
-			console.log("\nWarnings:");
+			log.warn("Warnings:");
 			for (const warning of result.warnings) {
-				console.log(`  - ${warning}`);
+				log.warn(`  ${warning}`);
 			}
 		}
 	} else {
-		console.error("Package validation failed:\n");
+		log.error("Package validation failed:");
 		for (const error of result.errors) {
-			console.error(`  - ${error}`);
+			log.error(`  ${error}`);
 		}
 		if (result.warnings.length > 0) {
-			console.log("\nWarnings:");
+			log.warn("Warnings:");
 			for (const warning of result.warnings) {
-				console.log(`  - ${warning}`);
+				log.warn(`  ${warning}`);
 			}
 		}
 	}

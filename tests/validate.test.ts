@@ -272,13 +272,15 @@ describe("cmdValidate", () => {
 
 		cmdValidate(tmpDir);
 
-		expect(consoleSpy).toHaveBeenCalledWith("Package structure is valid.");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Package structure is valid"));
 	});
 
 	it("prints error messages for invalid package", () => {
 		cmdValidate(tmpDir);
 
-		expect(consoleErrorSpy).toHaveBeenCalledWith("Package validation failed:\n");
+		expect(consoleErrorSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Package validation failed"),
+		);
 		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining("package.json not found"));
 	});
 });

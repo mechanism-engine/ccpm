@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { log } from "./logger.js";
 import type { ExtensionMetadata } from "./types.js";
 import { exists, readJson } from "./utils.js";
 
@@ -85,8 +86,8 @@ export async function discoverExtensions(projectRoot: string): Promise<Extension
 
 		const sourceDir = path.join(pkgDir, ext.root);
 		if (!exists(sourceDir)) {
-			console.error(
-				`Warning: ${npmPackage} declares extension but root directory "${ext.root}" not found. Skipping.`,
+			log.warn(
+				`${npmPackage} declares extension but root directory "${ext.root}" not found. Skipping.`,
 			);
 			continue;
 		}
@@ -94,9 +95,7 @@ export async function discoverExtensions(projectRoot: string): Promise<Extension
 		// Check for extension manifest
 		const extManifestPath = path.join(sourceDir, "package.json");
 		if (!exists(extManifestPath)) {
-			console.error(
-				`Warning: ${npmPackage} missing extension manifest at ${ext.root}/package.json. Skipping.`,
-			);
+			log.warn(`${npmPackage} missing extension manifest at ${ext.root}/package.json. Skipping.`);
 			continue;
 		}
 

@@ -4,13 +4,21 @@ import { Command } from "commander";
 import { cmdInstall } from "./commands/install.js";
 import { cmdList } from "./commands/list.js";
 import { cmdValidate, validatePackage } from "./commands/validate.js";
+import { log } from "./logger.js";
 
 const program = new Command();
 
 program
 	.name("ccpm")
 	.description("Unofficial extension manager for Cocos Creator - deploy extensions from npm")
-	.version("__VERSION__");
+	.version("__VERSION__")
+	.option("-q, --quiet", "Suppress all output except errors")
+	.hook("preAction", () => {
+		const opts = program.opts();
+		if (opts.quiet) {
+			log.setQuiet(true);
+		}
+	});
 
 program
 	.command("list")
@@ -20,7 +28,7 @@ program
 		try {
 			await cmdList(options.project);
 		} catch (err) {
-			console.error(`Error: ${err instanceof Error ? err.message : err}`);
+			log.error(err instanceof Error ? err.message : String(err));
 			process.exit(1);
 		}
 	});
@@ -34,7 +42,7 @@ program
 		try {
 			await cmdInstall(options.project, options.clean);
 		} catch (err) {
-			console.error(`Error: ${err instanceof Error ? err.message : err}`);
+			log.error(err instanceof Error ? err.message : String(err));
 			process.exit(1);
 		}
 	});

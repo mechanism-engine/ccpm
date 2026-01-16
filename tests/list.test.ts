@@ -20,7 +20,7 @@ describe("cmdList", () => {
 	it("shows 'No extensions found' when none exist", async () => {
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("No extensions found in node_modules.");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("No extensions found"));
 	});
 
 	it("lists discovered extensions", async () => {
@@ -31,9 +31,9 @@ describe("cmdList", () => {
 
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("Found 1 extension(s):\n");
-		expect(consoleSpy).toHaveBeenCalledWith("  my-ext");
-		expect(consoleSpy).toHaveBeenCalledWith("    package: @mechanism-engine/my-ext");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Found 1 extension(s)"));
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("my-ext"));
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("@mechanism-engine/my-ext"));
 	});
 
 	it("shows 'not deployed' status for undeployed extension", async () => {
@@ -44,7 +44,7 @@ describe("cmdList", () => {
 
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("    status:  not deployed (untracked)");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("not deployed (untracked)"));
 	});
 
 	it("shows 'deployed' status after install command", async () => {
@@ -59,7 +59,7 @@ describe("cmdList", () => {
 
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("    status:  deployed (tracked)");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("deployed (tracked)"));
 	});
 
 	it("shows correct target path", async () => {
@@ -70,7 +70,7 @@ describe("cmdList", () => {
 
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("    target:  extensions/test-ext");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("extensions/test-ext"));
 	});
 
 	it("lists multiple extensions", async () => {
@@ -79,8 +79,8 @@ describe("cmdList", () => {
 
 		await cmdList(fixture.root);
 
-		expect(consoleSpy).toHaveBeenCalledWith("Found 2 extension(s):\n");
-		expect(consoleSpy).toHaveBeenCalledWith("  ext-1");
-		expect(consoleSpy).toHaveBeenCalledWith("  ext-2");
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Found 2 extension(s)"));
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("ext-1"));
+		expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("ext-2"));
 	});
 });
