@@ -45,7 +45,7 @@ export function validatePackage(packageDir: string): ValidationResult {
 	const ext = pkg?.ccpm?.extension;
 	if (!ext) {
 		errors.push(
-			'Missing "ccpm.extension" in package.json. Add: { "ccpm": { "extension": { "source": "...", "name": "..." } } }',
+			'Missing "ccpm.extension" in package.json. Add: { "ccpm": { "extension": { "root": "...", "name": "..." } } }',
 		);
 		return { valid: false, errors, warnings };
 	}
